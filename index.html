@@ -1,0 +1,339 @@
+    <title>Title</title>
+    <style>
+  html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  background-color: #191028;
+}
+
+canvas {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  animation: 1.2s ease-in 0s 1 sepia;
+
+  /* Leaving the scaling to the browser is far from pixel-perfect!
+     I'm tracking the resize event to determine the integer factor
+     of the size I can fit on the page. This **should** result in
+     even pixel sizes across the canvas. */
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* a really fancy background to demonstrate how you might use CSS with canvas */
+#bg { background: linear-gradient(0deg, #f5f4eb -15%, #b0a9de 20%, #9ec2e8 25%, #7664fe 70%, #453e78 90%, #191028 110%); }
+
+img { display: none; } /* hiding the spritesheets */
+
+@keyframes sepia {
+  from { filter: sepia(100%); }
+  to { filter: sepia(0); }
+}
+
+
+svg { position: fixed; bottom: 10px; right: 10px; fill: #888; opacity: 0.2; }
+
+    </style>
+    <canvas id="bg" height="120px" width="128px"></canvas>
+<canvas id="canvas" height="120px" width="128px"></canvas>
+
+<img id="dood" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAQCAYAAABQrvyxAAABaUlEQVRIS91VIXICQRDcewCSD1AxEQgeAA4VERGVJ/CDGBSGH+QJURGIqFQMH4iIICLBRsSkigcc1VfVqbm52Z29LQys4biZ7umemdqrwpmf6sz1h8s08HV3U2MyV88vpkEv7k31lPiowOnbd/j5+yyOew2I8eeYQw7xHYEkeNrvw/1o1JmCF4dwWUBPw8OnsOTGL/W1DJBcFpVr5MWtAn3wOeZ0Q/4NWOLkGnhxKd5qgIf3mhPDn8xAiUA2KIWNxdikLAMpEq5IqQjgS7Ew4RpIXYme+JwOx1bPu4rJ3cvA4nccHocfDTeeX7frBt93fcjTtwFWfdOALCDv5fnsofnA8cwOm7B837VWQBaBwNXkupY5iOPQPLlkEzQHc3R9cHQMsLNI1kVIwPdaHAVvB7ctgbIwsSl+COak5TVs1e98yEgcKyBN6Rz8x1S0AWufLaycjFUfcfkez9kGYoRaXGmeheOEZQ1t4AixsZNNxZ75xAAAAABJRU5ErkJggg=="></img>
+<img id="terrain" src="data:image/png;base64,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"></img>
+<img id="tower" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAQCAYAAAD506FJAAADy0lEQVR4Xu1aPWsVQRSdpyBChIiiGA0GsbHxJYjBSsVWxCoQbERUYiFGsLASRAhYKYoGIX4QbNQ/IFgF7EQQVBAbCyWoCBZpBX1y5nmf85bdnbm7dz707XYvO9lz5+Oce+7dbb17Nt9RjGus3baOHhrZ37IO+jMgi3/p3M2+f527db7vt4l//fCMvndqYVHdnzmhLjxd0L9D4o/sPKsxv3yYj4JvLo7v+b/+tFEdPbKtB0nrT38A/sryGrV1cp/z/n9++aLv/GEfzQt7a17Doz9K8bn773pO703d7qyanVInD2xxnpvrs13HIYZji9NqaN0msRhajQD0C2AVATIJwD2AEgIYAh/kx3VwYociEuYJAEd88bzY83chH4iHcTEFwFcMjQBkHBAEYHT4kFpeWdJnw8WBhCAgYeQ5oJTwuQ7gXxIAZF8t8IIZmCNAwH/y6qeoC0lWAEA8kHEQCVgmQOs37NVnBlmYMjDKkEEoQTBvmwByBchGQGTeNx/f6mET166o6T2rxUloi2F28ox2IFeX5sQFKLoAZG1gKhacSGgTICIf5iFZgxfhQwCyFrwRgC6Fqqy/K/mI/DReOhMXxUHk9yU+rUd3H3fGt3+3rUPvfopNQASHZhERg1OH5llQTgngownIwTc3rgoBYltwSXw6A5z9Lzv4IF97bLeu/d8/3Kx2Hf+mHQCukAJAMRC2ZAkS3QHkNSFNF2DLwLEJ4MsB0Lxs84+NH3v96+LbBGDt+J3eEAgArlBlQFaAgH35RjdZS4lAcgKQSgngSsC6B7DIgeC5aETaBMAHvvnM/x2/TAAunv7V94oS5EPmJxGQImFRDCY+xIdcCMZLvY5MTgAwOWr+xWoCwoJzCBizBm8cwF/6VCmBqgqAFAFd8bMCABciIUDJCQA5AM5bAGw8OuJVDkDdHkAKGTimANWdf7YHFdoBcghojg0hAMAjFzAwDoArAER6aQFwdQA+moAhLXhsAko2AaskgCoCEIr8pgBQnBACSXy2AzBfQxUtHqcLW3QAXB0AbboZiwR+zB5ASAHA+uMrP3oTFDoDpywA2QxM+yJJwDIBonumC5Cs//EsLQDmAbAFFOI1IDWebD2AvFg55Mf/Fx3AVL8DsH0Igzlx1iA2AWPj2867T/LZsM37iEM6+2sBSPE7gDoCEIMAPmpwVwHCfOvgNyVAOQ1NAQid+bORPXj+tSMdg7gAcD/FzMsA2VdP5kKEcCChLbiJRxa8EYDuqvh+DemShX1lXxds32PYPQAbARsBkLHgoQQgWwY1PQDflEvr+b8BH5+kTW4KWAkAAAAASUVORK5CYII="></img>
+<img id="background" src="">
+
+<embed name="GoodEnough" src="music.mp3" loop="true" hidden="true" autostart="true">
+<script>
+  /*
+  This engine is still really scuffed!
+  Stuff that I will add eventually (maybe)...
+  - Asset loading instead of hard-coding
+  - Cleaning up the 'level' object format
+  - Cleaning up the 'animations' object format
+  - Implementing CLIPPING (this one is super important)
+  - Other dynamic objects
+  - Actually readable code
+  
+  Oh well, I think it works as a basic example!
+*/
+const canvas = document.getElementById('canvas')
+const bgCanvas = document.getElementById('bg')
+const context = canvas.getContext('2d')
+const bgContext = bgCanvas.getContext('2d')
+
+const types = {
+  dood: {
+    awake: (state) => {
+      state.frame = 0
+      state.ticks = 0
+      state.vx = 0
+      state.vy = 0
+      state.grounded = false
+    },
+    update: (state, tick, input) => {
+      const gravityIncrement = 0.08
+      const maxGravity = 1
+      const jumpPower = 2.3
+      const minJumpPower = 0.9
+      const speedIncrement = 0.05
+      const maxSpeed = 0.7
+  
+      state.vy = state.vy < maxGravity ? state.vy + gravityIncrement : maxGravity
+      state.y += state.vy
+   
+      if (input.up && state.grounded) state.vy = -jumpPower
+      if (!input.up && !state.grounded && state.vy < -minJumpPower) state.vy = -minJumpPower
+      if (input.right) {
+        state.flip = false
+        state.vx = state.vx < maxSpeed ? state.vx + speedIncrement : maxSpeed
+        state.x += state.vx
+        state.animation = state.vx < 0
+          ? animations.slide : state.grounded
+          ? animations.run : state.vy < 0
+          ? animations.jump : animations.fall
+      } else if (input.left) {
+        state.flip = true
+        state.vx = state.vx > -maxSpeed ? state.vx - speedIncrement : -maxSpeed
+        state.x += state.vx
+        state.animation = state.vx > 0
+          ? animations.slide : state.grounded
+          ? animations.run : state.vy < 0
+          ? animations.jump : animations.fall
+      } else {
+        state.vx = Math.abs(state.vx) > 0.2 ? state.vx * 0.89 : 0
+        state.x += state.vx
+        state.animation = state.grounded
+          ? Math.abs(state.vx) > 0
+          ? animations.slide : animations.idle : state.vy < 0
+          ? animations.jump : animations.fall
+      }
+      
+      // really basic death plane
+      if (state.y > 150) {
+        state.x = 28
+        state.y = 68
+        state.flip = false
+     
+        // flash the css animation
+        canvas.style.animation = '0'
+        bgCanvas.style.animation = '0'
+        requestAnimationFrame(() => {
+          canvas.style.animation = ''
+          bgCanvas.style.animation = ''
+        })
+      }
+
+      // adjust bounding box based on direction for the collision check
+      const collisions = tileCollision(state, state.flip ? 0 : 2, state.flip ? 5 : 7, 3, 16)
+      
+      state.grounded = collisions.bottom
+      
+      setCamera(Math.floor(state.x), state.flip)
+    }
+  }
+}
+
+const level = {
+  image: document.getElementById('terrain'),
+  size: 16,
+  width: 22,
+  collisions: [1, 2, 3, 4, 5, 6, 7], // data layer tiles that collide
+  bg: [
+     1, 2, 3, 0, 0, 4, 5, 0,
+     6, 5, 7, 8, 6, 4, 9,10,
+    11,12,13,14,15, 4,16,17,
+    18,19,20, 0,11,21, 0, 0,
+    22,22,23,24,18,23,20,25,
+    22,22,22,26,22,22,22,22],
+  data: [
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,22,23,24, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,25,26,27, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0,13,14,15, 0, 0, 0, 0,28,29,30, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0,16,17,18, 0, 0, 0, 8,13, 3, 2, 0, 0, 8, 0,10,13,24, 0, 0,
+     0,24,10,19,20,21, 0, 2, 0, 4, 5, 1, 5,11, 0, 2, 0, 2,25,14,18, 0,
+     0, 6, 4, 3, 7,11, 0,21, 0, 1, 1, 1,21, 0, 0,28, 0, 8,19,20,30, 0,
+     0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1,15, 0, 0, 0,12, 7, 5, 4, 6, 0],
+  parallax: [
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0,13,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0,11,12, 0, 0, 0,15,16, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 9,10, 0, 0, 0,11,12, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 7, 8, 0, 0, 0, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 5, 6, 0, 0, 0, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 3, 4, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+}
+
+const dood = document.getElementById('dood')
+const animations = {
+  idle:  { image: dood, width: 8, height: 16, frames: [[0, 1]] },
+  run:   { image: dood, width: 8, height: 16, frames: [[2, 7], [1, 7], [2, 7], [3, 7]] },
+  slide: { image: dood, width: 8, height: 16, frames: [[4, 1]] },
+  jump:  { image: dood, width: 8, height: 16, frames: [[1, 1]] },
+  fall:  { image: dood, width: 8, height: 16, frames: [[5, 1]] }
+}
+
+const state = {
+  tick: 0,
+  camera: { x: 0, px: 0, ox: 0 },
+  input: {},
+  objects: [
+    { type: types.dood, x: 28, y: 68, flip: false }
+  ]
+}
+
+function tileCollision (state, left, right, top, bottom) {
+  const collisions = { left: false, right: false, top: false, bottom: false }
+
+  const topTile = Math.floor((state.y + top) / 16)
+  const topOffset = Math.floor((state.y + (top + 2)) / 16)
+  const bottomTile = Math.ceil((state.y + bottom) / 16) - 1
+  const bottomOffset = Math.ceil((state.y + (bottom - 2)) / 16) - 1
+
+  let leftTile = Math.floor((state.x + left) / 16) // potential wrapping issues
+  let rightTile = Math.ceil((state.x + right) / 16) - 1 // on these tiles
+
+  // prevent corner clipping by offsetting the y-axis of the bounding box
+  if (level.collisions.includes(level.data[bottomOffset * level.width + rightTile]) ||
+      level.collisions.includes(level.data[topOffset * level.width + rightTile])) {
+    state.x = rightTile * 16 - 8
+    state.vx *= 0.8
+    collisions.right = true
+  }
+
+  if (level.collisions.includes(level.data[bottomOffset * level.width + leftTile]) ||
+      level.collisions.includes(level.data[topOffset * level.width + leftTile])) {
+    state.x = leftTile * 16 + 16
+    state.vx *= 0.8
+    collisions.left = true
+  }
+
+  // determine y-axis collisions with the adjusted position
+  leftTile = Math.floor((state.x + left) / 16)
+  rightTile = Math.ceil((state.x + right) / 16) - 1
+
+  if (level.collisions.includes(level.data[bottomTile * level.width + leftTile]) ||
+      level.collisions.includes(level.data[bottomTile * level.width + rightTile])) {
+    state.y = bottomTile * 16 - 16
+    collisions.bottom = true
+  }
+
+  if (level.collisions.includes(level.data[topTile * level.width + leftTile]) ||
+      level.collisions.includes(level.data[topTile * level.width + rightTile])) {
+    state.y = topTile * 16 + 13
+    state.vy *= 0.5
+    collisions.top = true
+  }
+  
+  return collisions
+}
+
+function setCamera (x, flip) {
+  let delta = flip ? Math.abs(12 - state.camera.ox) / 20 : Math.abs(-12 - state.camera.ox) / 20
+  
+  delta = delta > 0.2 ? delta : 0.2
+
+  state.camera.ox = flip ? Math.min(state.camera.ox + delta, 12) : Math.max(state.camera.ox - delta, -12)
+  state.camera.px = state.camera.x
+  state.camera.x = x - 60 - state.camera.ox
+}
+
+function initialize () {
+  state.objects.forEach(thing => thing.type.awake(thing))
+  
+  resizeCanvas(canvas)
+  resizeCanvas(bgCanvas)
+  renderBG(level)
+  
+  window.onkeydown = event => input(event, true)
+  window.onkeyup = event => input(event, false)
+  window.requestAnimationFrame(tick)
+  window.onresize = event => {
+    resizeCanvas(canvas)
+    resizeCanvas(bgCanvas)
+  }
+}
+
+function tick (time) {
+  state.tick += 1
+
+  state.objects.forEach(thing => thing.type.update(thing, state.tick, state.input, state.camera))
+  
+  context.clearRect(state.camera.px, 0, canvas.width, canvas.height)
+  drawLevel(context, level, state.camera)
+  state.objects.forEach(thing => drawSprite(context, thing, state.camera))
+
+  window.requestAnimationFrame(tick)
+}
+
+function drawSprite (context, state, camera) {
+  const { type, animation, frame, ticks, x, y, flip } = state
+  const { image, width, height, frames } = animation
+  
+  state.ticks -= 1
+  if (state.frame >= animation.frames.length) state.frame = 0
+  if (state.ticks >= animation.frames[state.frame][1]) state.ticks = animation.frames[state.frame][1]
+  
+  if (state.ticks <= 0) {
+    state.frame += 1
+    if (state.frame >= animation.frames.length) state.frame = 0
+    
+    state.ticks = animation.frames[state.frame][1]
+  }
+
+  context.save()
+  context.translate(Math.floor(x + width / 2), Math.floor(y + height / 2))
+  context.scale(flip ? -1 : 1, 1)
+  
+  context.drawImage(animation.image, animation.frames[state.frame][0] * width, 0,
+                    width, height, Math.floor(-width/2), Math.floor(-height/2), width, height)
+
+  context.restore()
+}
+
+function drawLevel (context, level, camera) {
+  context.translate(Math.floor(camera.px) - Math.floor(camera.x), 0)
+  
+  for (let i = 0; i < level.parallax.length; i++)
+    context.drawImage(document.getElementById('tower'), (level.parallax[i] - 1) * level.size, 0, level.size, level.size, (i % level.width) * level.size + Math.floor(camera.x / 2), Math.floor(i / level.width) * level.size, level.size, level.size)
+  
+  for (let i = 0; i < level.data.length; i++)
+    context.drawImage(level.image, (level.data[i] - 1) * level.size, 0, level.size, level.size, (i % level.width) * level.size, Math.floor(i / level.width) * level.size, level.size, level.size)
+}
+
+function input ({ key }, active) {
+  switch (key) {
+    case 'd':
+    case 'ArrowRight': return state.input.right = active
+    case 'a':
+    case 'ArrowLeft': return state.input.left = active
+    case 'w':
+    case 'ArrowUp': return state.input.up = active
+  }
+}
+
+function resizeCanvas (canvas) {
+  const scale = Math.min(
+    Math.floor(window.innerWidth / 128),
+    Math.floor(window.innerHeight / 120))
+  
+  canvas.style.width = `${scale * 128}px`
+  canvas.style.height = `${scale * 120}px`
+ }
+
+function renderBG (level) {
+  for (let i = 0; i < level.bg.length; i++) {
+    if (level.bg[i] > 0)
+      bgContext.drawImage(document.getElementById('background'), (level.bg[i] - 1) * level.size, 0, level.size, level.size, (i % 8) * level.size, Math.floor(i / 8) * level.size, level.size, level.size)
+  }
+}
+
+initialize()
+
+    </script>
+
